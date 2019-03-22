@@ -1,6 +1,9 @@
 package ch.hcuge.comprehensio.service;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -8,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.hcuge.comprehensio.entity.Lang;
+import ch.hcuge.comprehensio.entity.Role;
 import ch.hcuge.comprehensio.entity.User;
+import ch.hcuge.comprehensio.repository.RoleRepository;
 import ch.hcuge.comprehensio.repository.UserRepository;
 
 @Service
@@ -16,6 +21,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 	public Iterable<User> getUsers() {
 		return this.userRepository.findAll();
@@ -26,6 +34,7 @@ public class UserService {
 		return this.userRepository.findById(userId).get();
 	}
 
+	@Transactional
 	public User saveOrUpdateUser(Principal principal) {
 		JwtAuthenticationToken auth = ((JwtAuthenticationToken) principal);
 		User user = new User();
@@ -42,6 +51,15 @@ public class UserService {
 		if (auth.getTokenAttributes().containsKey("email")) {
 			user.setEmail((String) auth.getTokenAttributes().get("email"));
 		}
+
+
+        if(auth.getAuthorities() != null) {
+            List<String> ids = auth.getAuthorities().stream()
+                    .map(a -> a.getAuthority())
+                    .collect(Collectors.toList());
+            Set<Role> roles = this.roleRepository.findByIds(ids);
+            user.setRoles(roles);
+        }
 
 		return this.userRepository.save(user);
 	}
