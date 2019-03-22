@@ -61,7 +61,8 @@ public class UserService {
             user.setRoles(roles);
         }
 
-		return this.userRepository.save(user);
+		User resp = this.userRepository.save(user);
+        return resp;
 	}
 
 	@Transactional

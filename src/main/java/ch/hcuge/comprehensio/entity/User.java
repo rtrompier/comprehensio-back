@@ -16,7 +16,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"langs", "roles"})
+@JsonIgnoreProperties({"langs"})
 public class User {
 
     @Id
