@@ -1,6 +1,7 @@
 server:
   port: 8080
 
+spring.jpa.properties.hibernate.enable_lazy_load_no_trans: true
 
 rest.security.issuer-uri: http://remy-trompier.ch:9000/auth/realms/test
 

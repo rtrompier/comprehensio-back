@@ -1,13 +1,18 @@
 package ch.hcuge.comprehensio.init;
 
-import ch.hcuge.comprehensio.entity.Lang;
-import ch.hcuge.comprehensio.entity.Role;
-import ch.hcuge.comprehensio.repository.LangRepository;
-import ch.hcuge.comprehensio.repository.RoleRepository;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import ch.hcuge.comprehensio.entity.Lang;
+import ch.hcuge.comprehensio.entity.Role;
+import ch.hcuge.comprehensio.entity.User;
+import ch.hcuge.comprehensio.repository.LangRepository;
+import ch.hcuge.comprehensio.repository.RoleRepository;
+import ch.hcuge.comprehensio.repository.UserRepository;
+import ch.hcuge.comprehensio.service.LangService;
+import ch.hcuge.comprehensio.service.UserService;
 
 @Service
 public class Initializer {
@@ -17,7 +22,10 @@ public class Initializer {
 
     @Autowired
     private LangRepository langRepository;
-
+    
+    @Autowired
+    private UserRepository userRepository;
+    
     @PostConstruct
     public void initRoles() {
         this.roleRepository.deleteAll();
@@ -31,4 +39,16 @@ public class Initializer {
         this.langRepository.save(Lang.builder().id("fra").label("Français").build());
         this.langRepository.save(Lang.builder().id("eng").label("English").build());
     }
+    
+    
+    @PostConstruct
+    public void initUsers() {
+        this.userRepository.deleteAll();
+        this.userRepository.save(User.builder().id("user1").firstName("user_1").build());
+        this.userRepository.save(User.builder().id("user2").firstName("user_2").build());
+    }
+    
+    
 }
+
+

@@ -22,7 +22,7 @@ public class Lang {
     private String id;
     private String label;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "langs")
+    @ManyToMany(mappedBy = "langs")
     private Set<User> users = new HashSet<>();
 
 }
