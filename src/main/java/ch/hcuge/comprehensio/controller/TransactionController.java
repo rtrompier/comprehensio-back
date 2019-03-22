@@ -47,14 +47,10 @@ public class TransactionController {
         Transaction tr = this.transactionService.saveTransaction(transaction);
         return ResponseEntity.ok(tr);
     }
-    
-    @GetMapping(name = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> streamEvents() {
+
+    @GetMapping(path = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> streamFlux() {
         return Flux.interval(Duration.ofSeconds(1))
-          .map(sequence -> ServerSentEvent.<String> builder()
-            .id(String.valueOf(sequence))
-              .event("periodic-event")
-              .data("SSE - " + LocalTime.now().toString())
-              .build());
+                .map(sequence -> "Flux - " + LocalTime.now().toString());
     }
 }
