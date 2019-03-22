@@ -19,7 +19,7 @@ public class SecurityConfiguration {
 	    .httpBasic().disable()
 	    .formLogin().disable()
 	    	.authorizeExchange()
-	    	.anyExchange().permitAll()
+	    	.anyExchange().authenticated()
 	    	.and()
 			.oauth2ResourceServer()
 			.jwt();
