@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+
+rest.security.issuer-uri: http://remy-trompier.ch:9000/auth/realms/test
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${rest.security.issuer-uri}
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.security: DEBUG 
+    com.example.demo.config: DEBUG    
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+    reactor.ipc.netty.channel.ChannelOperationsHandler: DEBUG
+    reactor.ipc.netty.http.server.HttpServer: DEBUG
+    reactor.ipc.netty.http.client: DEBUG
+    io.reactivex.netty.protocol.http.client: DEBUG
+    io.netty.handler: DEBUG
+    io.netty.handler.proxy.HttpProxyHandler: DEBUG
+    io.netty.handler.proxy.ProxyHandler: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
+    reactor.ipc.netty.channel: DEBUG
+
+spring.http.log-request-details: true  
