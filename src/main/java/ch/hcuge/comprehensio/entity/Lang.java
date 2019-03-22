@@ -15,7 +15,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties("users")
+@JsonIgnoreProperties(value = "users",ignoreUnknown=true)
 public class Lang {
 
     @Id

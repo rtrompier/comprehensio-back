@@ -34,6 +34,8 @@ public class SecurityConfiguration {
 	SecurityWebFilterChain configure(ServerHttpSecurity http) {
 		// @formatter:off
 	    http
+	    .cors().disable()
+	    .csrf().disable()
 	    .httpBasic().disable()
 	    .formLogin().disable()
 	    	.authorizeExchange()
