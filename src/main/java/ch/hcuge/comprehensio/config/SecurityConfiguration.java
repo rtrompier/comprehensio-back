@@ -19,7 +19,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.springframework.web.reactive.config.CorsRegistry;
 import reactor.core.publisher.Mono;
 
 @Configuration

@@ -1,5 +1,6 @@
 package ch.hcuge.comprehensio.controller;
 
+import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalTime;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,8 +45,8 @@ public class TransactionController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Transaction> endTransaction(@PathVariable("id") String id, @RequestBody Transaction transaction) {
-        Transaction tr = this.transactionService.saveTransaction(transaction);
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable("id") String id, @RequestBody Transaction transaction) {
+        Transaction tr = this.transactionService.updateTransaction(transaction);
         return ResponseEntity.ok(tr);
     }
     
@@ -56,5 +58,13 @@ public class TransactionController {
               .event("periodic-event")
               .data("SSE - " + LocalTime.now().toString())
               .build());
+    }
+    
+    
+    @GetMapping("/sse")
+    public Flux<Transaction> transactionEvent(Principal principal) {
+    	JwtAuthenticationToken auth = ((JwtAuthenticationToken) principal);
+//        return transactionService.getTransactions((String) auth.getTokenAttributes().get("sub"));
+    	 return transactionService.getTransactions("1");
     }
 }
