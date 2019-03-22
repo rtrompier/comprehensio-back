@@ -5,9 +5,9 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +34,8 @@ public class TransactionController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Transaction> getTransaction(String id) {
-        return ResponseEntity.ok(Transaction.builder().build());
+    public ResponseEntity<Transaction> getTransaction(@PathVariable("id")String id) {
+    	return transactionService.getTransaction(id).map(t->ResponseEntity.ok(t)).orElse(new ResponseEntity(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -57,7 +57,7 @@ public class TransactionController {
     }
     
     
-    @GetMapping("/sse")
+    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Transaction> transactionEvent(Principal principal) {
     	JwtAuthenticationToken auth = ((JwtAuthenticationToken) principal);
 //        return transactionService.getTransactions((String) auth.getTokenAttributes().get("sub"));

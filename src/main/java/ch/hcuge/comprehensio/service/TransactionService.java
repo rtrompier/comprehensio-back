@@ -32,6 +32,11 @@ public class TransactionService {
 	public Iterable<Transaction> getTransactions() {
 		return this.transactionRepository.findAll();
 	}
+	
+	@Transactional(readOnly = true)
+	public Optional<Transaction> getTransaction(String id) {
+		 return this.transactionRepository.findById(id);
+	}
 
 	@Transactional
 	public Transaction saveTransaction(Transaction tr) {
