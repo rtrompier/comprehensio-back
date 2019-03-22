@@ -48,7 +48,7 @@ public class TransactionController {
         return ResponseEntity.ok(tr);
     }
     
-    @GetMapping("/stream-sse")
+    @GetMapping(name = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> streamEvents() {
         return Flux.interval(Duration.ofSeconds(1))
           .map(sequence -> ServerSentEvent.<String> builder()
