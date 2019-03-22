@@ -19,6 +19,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.springframework.web.reactive.config.CorsRegistry;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -28,7 +29,6 @@ public class SecurityConfiguration {
 	
 	private static final String KEYCLOAK_REALM_ACCESS = "realm_access";
 	private static final String KEYCLOAK_ROLES = "roles";
-
 
 	@Bean
 	SecurityWebFilterChain configure(ServerHttpSecurity http) {

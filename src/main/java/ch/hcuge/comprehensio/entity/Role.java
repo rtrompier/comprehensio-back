@@ -22,6 +22,7 @@ public class Role {
     private String id;
     private String label;
 
+    @Transient
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "roles")
     private Set<User> users = new HashSet<>();
 }
