@@ -36,6 +36,7 @@ public class Initializer {
         this.langRepository.deleteAll();
         this.langRepository.save(Lang.builder().id("fra").label("Français").build());
         this.langRepository.save(Lang.builder().id("eng").label("English").build());
+        this.langRepository.save(Lang.builder().id("ara").label("Arabe").build());
     }
     
     
