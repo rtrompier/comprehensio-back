@@ -26,7 +26,7 @@ public class TransactionSSE implements TransactionMessageListener {
 	public Flux<ServerSentEvent<Transaction>> subscribe(String lastEventId) {
 		return replayProcessor
 				.log("subscribe")
-				.filter(x -> x.data().getState() == State.PENDING)
+				.filter(x -> x.data().getState() != State.INPROGRESS )
 				;
 	}
 	
