@@ -11,8 +11,6 @@ import ch.hcuge.comprehensio.entity.User;
 import ch.hcuge.comprehensio.repository.LangRepository;
 import ch.hcuge.comprehensio.repository.RoleRepository;
 import ch.hcuge.comprehensio.repository.UserRepository;
-import ch.hcuge.comprehensio.service.LangService;
-import ch.hcuge.comprehensio.service.UserService;
 
 @Service
 public class Initializer {
