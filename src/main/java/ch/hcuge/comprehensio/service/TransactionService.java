@@ -112,7 +112,7 @@ public class TransactionService {
 	}
 
 	public Flux<Transaction> getTransactions(String userId) {
-		Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
+		Flux<Long> interval = Flux.interval(Duration.ofSeconds(30));
 		Flux<Transaction> stockTransactionFlux = Flux
 				.fromStream(Stream.generate(() -> this.transactionRepository.findById(userId).get()));
 		return Flux.zip(interval, stockTransactionFlux).map(Tuple2::getT2);
