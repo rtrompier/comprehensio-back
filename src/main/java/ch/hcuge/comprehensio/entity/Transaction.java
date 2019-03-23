@@ -11,12 +11,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import org.springframework.http.codec.ServerSentEvent;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import ch.hcuge.comprehensio.message.Spring5TransactionSSE;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import reactor.core.publisher.Flux;
 
 @Entity
 @Data
@@ -54,6 +58,5 @@ public class Transaction {
     @OneToOne
     @JoinColumn
     private Note note;
-    
     
 }

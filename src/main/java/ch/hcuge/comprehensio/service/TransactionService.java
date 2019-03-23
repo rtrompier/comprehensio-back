@@ -8,12 +8,15 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotEmpty;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.hcuge.comprehensio.entity.Lang;
 import ch.hcuge.comprehensio.entity.State;
 import ch.hcuge.comprehensio.entity.Transaction;
+import ch.hcuge.comprehensio.message.Spring5TransactionSSE;
 import ch.hcuge.comprehensio.repository.LangRepository;
 import ch.hcuge.comprehensio.repository.TransactionRepository;
 import reactor.core.publisher.Flux;
@@ -32,18 +35,22 @@ public class TransactionService {
 	public Iterable<Transaction> getTransactions() {
 		return this.transactionRepository.findAll();
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Optional<Transaction> getTransaction(String id) {
-		 return this.transactionRepository.findById(id);
+		return this.transactionRepository.findById(id);
 	}
 
 	@Transactional
 	public Transaction saveTransaction(Transaction tr) {
-		Lang fromLang = this.langRepository.findById(tr.getFromLang().getId().toLowerCase()).get();
-		tr.setFromLang(fromLang);
-		Lang toLang = this.langRepository.findById(tr.getToLang().getId().toLowerCase()).get();
-		tr.setToLang(toLang);
+		if (tr.getFromLang() != null) {
+			Lang fromLang = this.langRepository.findById(tr.getFromLang().getId().toLowerCase()).get();
+			tr.setFromLang(fromLang);
+		}
+		if (tr.getToLang() != null) {
+			Lang toLang = this.langRepository.findById(tr.getToLang().getId().toLowerCase()).get();
+			tr.setToLang(toLang);
+		}
 		return this.transactionRepository.save(tr);
 	}
 
@@ -65,17 +72,21 @@ public class TransactionService {
 			} else if (tr2.getToLang() != null) {
 				tr.setToLang(tr2.getToLang());
 			}
-			
+
 			tr.setStartDate(tr2.getStartDate());
-			if(tr.getState() == null) {
+			if (tr.getState() == null) {
 				tr.setState(tr2.getState());
 			}
-			if(tr.getCaller() == null) {
+			if (tr.getCaller() == null) {
 				tr.setCaller(tr2.getCaller());
 			}
-			if(tr.getReceiver() == null) {
+			if (tr.getReceiver() == null) {
 				tr.setReceiver(tr2.getReceiver());
 			}
+		}
+
+		if (tr.getState() == State.PENDING) {
+			this.spring5SSE.onPostMessage(tr);
 		}
 
 		return this.transactionRepository.save(tr);
@@ -102,6 +113,18 @@ public class TransactionService {
 		Flux<Transaction> stockTransactionFlux = Flux
 				.fromStream(Stream.generate(() -> this.transactionRepository.findById(userId).get()));
 		return Flux.zip(interval, stockTransactionFlux).map(Tuple2::getT2);
+	}
+
+	public final ApplicationEventPublisher eventPublisher;
+
+	public TransactionService(ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
+	}
+
+	private Spring5TransactionSSE spring5SSE = new Spring5TransactionSSE();
+
+	public Flux<ServerSentEvent<Transaction>> subscribeSpring5(String lastEventId) {
+		return spring5SSE.subscribe(lastEventId);
 	}
 
 }

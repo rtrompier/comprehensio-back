@@ -3,11 +3,13 @@ package ch.hcuge.comprehensio.controller;
 import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +29,7 @@ public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
-
+    
     @GetMapping
     public ResponseEntity<Iterable<Transaction>> getTransactions() {
         return ResponseEntity.ok(this.transactionService.getTransactions());
@@ -35,7 +37,7 @@ public class TransactionController {
     
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransaction(@PathVariable("id")String id) {
-    	return transactionService.getTransaction(id).map(t->ResponseEntity.ok(t)).orElse(new ResponseEntity(HttpStatus.NOT_FOUND));
+    	return transactionService.getTransaction(id).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -62,5 +64,17 @@ public class TransactionController {
     	JwtAuthenticationToken auth = ((JwtAuthenticationToken) principal);
 //        return transactionService.getTransactions((String) auth.getTokenAttributes().get("sub"));
     	 return transactionService.getTransactions("1");
+    }
+    
+    
+    
+    
+    @GetMapping(path = "/sse/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Transaction>> subscribeChatMessages_spring5(
+    		@PathVariable("id") String id
+    		) {
+    	
+//        return chatRoomEntry.subscribeSpring5(lastEventId);
+    	return transactionService.subscribeSpring5("1");
     }
 }

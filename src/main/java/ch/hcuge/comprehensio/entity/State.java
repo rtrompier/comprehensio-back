@@ -1,5 +1,5 @@
 package ch.hcuge.comprehensio.entity;
 
 public enum State {
-	INIT, CLOSE, PENDING, CANCELED;
+	INIT, CLOSE, PENDING, INPROGRESS, CANCELED;
 }
