@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.hcuge.comprehensio.entity.Lang;
 import ch.hcuge.comprehensio.entity.State;
 import ch.hcuge.comprehensio.entity.Transaction;
-import ch.hcuge.comprehensio.message.Spring5TransactionSSE;
+import ch.hcuge.comprehensio.message.TansactionSSE;
 import ch.hcuge.comprehensio.repository.LangRepository;
 import ch.hcuge.comprehensio.repository.TransactionRepository;
 import reactor.core.publisher.Flux;
@@ -86,7 +86,10 @@ public class TransactionService {
 		}
 
 		if (tr.getState() == State.PENDING) {
-			this.spring5SSE.onPostMessage(tr);
+			this.sseInterpreter.onPostMessage(tr);
+		}
+		if (tr.getState() == State.INPROGRESS) {
+			this.sseCaregiver.onPostMessage(tr);
 		}
 
 		return this.transactionRepository.save(tr);
@@ -121,10 +124,14 @@ public class TransactionService {
 		this.eventPublisher = eventPublisher;
 	}
 
-	private Spring5TransactionSSE spring5SSE = new Spring5TransactionSSE();
+	private TansactionSSE sseInterpreter = new TansactionSSE();
+	private TansactionSSE sseCaregiver = new TansactionSSE();
 
-	public Flux<ServerSentEvent<Transaction>> subscribeSpring5(String lastEventId) {
-		return spring5SSE.subscribe(lastEventId);
+	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSEInterpreter(String lastEventId) {
+		return sseInterpreter.subscribe(lastEventId);
+	}
+	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSECaregiver(String transactionId) {
+		return sseCaregiver.subscribe2(transactionId);
 	}
 
 }

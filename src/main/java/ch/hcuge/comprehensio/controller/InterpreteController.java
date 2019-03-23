@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.hcuge.comprehensio.entity.User;
 import ch.hcuge.comprehensio.service.InterpreteService;
 
 @RestController
@@ -19,11 +20,11 @@ public class InterpreteController {
 
     @Autowired
     private InterpreteService interpreteService;
-
+    
     @GetMapping
     public ResponseEntity<?> getInterpretes(@RequestParam("langFrom")@NotBlank String langFrom, @RequestParam("langFrom")@NotBlank String langTo) {
-    	List result = interpreteService.findUserByLang(langFrom, langTo);
+    	List<User> result = interpreteService.findUserByLang(langFrom, langTo);
     	return ResponseEntity.ok(result);
     }
-
+    
 }

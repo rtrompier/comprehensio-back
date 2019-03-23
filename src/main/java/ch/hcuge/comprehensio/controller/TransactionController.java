@@ -1,16 +1,10 @@
 package ch.hcuge.comprehensio.controller;
 
-import java.security.Principal;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,29 +46,37 @@ public class TransactionController {
         return ResponseEntity.ok(tr);
     }
 
-    @GetMapping(path = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> streamFlux() {
-        return Flux.interval(Duration.ofSeconds(1))
-                .map(sequence -> "Flux - " + LocalTime.now().toString());
-    }
+//    @GetMapping(path = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public Flux<String> streamFlux() {
+//        return Flux.interval(Duration.ofSeconds(1))
+//                .map(sequence -> "Flux - " + LocalTime.now().toString());
+//    }
+//    
+//    
+//    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public Flux<Transaction> transactionEvent(Principal principal) {
+//    	JwtAuthenticationToken auth = ((JwtAuthenticationToken) principal);
+////        return transactionService.getTransactions((String) auth.getTokenAttributes().get("sub"));
+//    	 return transactionService.getTransactions("1");
+//    }
     
     
-    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Transaction> transactionEvent(Principal principal) {
-    	JwtAuthenticationToken auth = ((JwtAuthenticationToken) principal);
-//        return transactionService.getTransactions((String) auth.getTokenAttributes().get("sub"));
-    	 return transactionService.getTransactions("1");
-    }
     
     
-    
-    
-    @GetMapping(path = "/sse/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Transaction>> subscribeChatMessages_spring5(
+    @GetMapping(path = "/sse-interpreter/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Transaction>> subscribeInterpreterTransactionMessage(
     		@PathVariable("id") String id
     		) {
     	
 //        return chatRoomEntry.subscribeSpring5(lastEventId);
-    	return transactionService.subscribeSpring5("1");
+    	return transactionService.subscribeTansactionSSEInterpreter("1");
+    }
+    
+    @GetMapping(path = "/sse-caregiver/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Transaction>> subscribeCaregiverTransactionMessage(
+    		@PathVariable("id") String transactionId
+    		) {
+    	
+    	return transactionService.subscribeTansactionSSECaregiver(transactionId);
     }
 }
