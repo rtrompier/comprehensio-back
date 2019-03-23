@@ -6,7 +6,6 @@ import ch.hcuge.comprehensio.entity.State;
 import ch.hcuge.comprehensio.entity.Transaction;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.ReplayProcessor;
 
 public class TransactionSSE implements TransactionMessageListener {
 
