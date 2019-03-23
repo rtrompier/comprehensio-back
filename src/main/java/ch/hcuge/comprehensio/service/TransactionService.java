@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.hcuge.comprehensio.entity.Lang;
 import ch.hcuge.comprehensio.entity.State;
 import ch.hcuge.comprehensio.entity.Transaction;
-import ch.hcuge.comprehensio.message.TansactionSSE;
+import ch.hcuge.comprehensio.message.TransactionSSE;
 import ch.hcuge.comprehensio.repository.LangRepository;
 import ch.hcuge.comprehensio.repository.TransactionRepository;
 import reactor.core.publisher.Flux;
@@ -124,8 +124,8 @@ public class TransactionService {
 		this.eventPublisher = eventPublisher;
 	}
 
-	private TansactionSSE sseInterpreter = new TansactionSSE();
-	private TansactionSSE sseCaregiver = new TansactionSSE();
+	private TransactionSSE sseInterpreter = new TransactionSSE();
+	private TransactionSSE sseCaregiver = new TransactionSSE();
 
 	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSEInterpreter(String lastEventId) {
 		return sseInterpreter.subscribe(lastEventId);

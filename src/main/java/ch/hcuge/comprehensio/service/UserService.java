@@ -38,4 +38,8 @@ public class UserService {
 		this.userRepository.save(user);
 		return user;
 	}
+
+	public User getUserById(String userId) {
+		return this.userRepository.findById(userId).get();
+	}
 }

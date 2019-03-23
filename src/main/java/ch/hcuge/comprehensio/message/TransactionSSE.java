@@ -4,15 +4,18 @@ import org.springframework.http.codec.ServerSentEvent;
 
 import ch.hcuge.comprehensio.entity.State;
 import ch.hcuge.comprehensio.entity.Transaction;
+import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.ReplayProcessor;
 
-public class TansactionSSE implements TransactionMessageListener {
+public class TransactionSSE implements TransactionMessageListener {
 
-	private ReplayProcessor<ServerSentEvent<Transaction>> replayProcessor;
+//	private ReplayProcessor<ServerSentEvent<Transaction>> replayProcessor;
+	private EmitterProcessor<ServerSentEvent<Transaction>> replayProcessor;
 
-	public TansactionSSE() {
-		this.replayProcessor = ReplayProcessor.<ServerSentEvent<Transaction>>create(100);
+	public TransactionSSE() {
+//		this.replayProcessor = ReplayProcessor.<ServerSentEvent<Transaction>>create(100);
+		this.replayProcessor = EmitterProcessor.<ServerSentEvent<Transaction>>create(100);
 	}
 
 	@Override

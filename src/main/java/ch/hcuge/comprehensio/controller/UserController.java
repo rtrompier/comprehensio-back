@@ -12,17 +12,22 @@ import javax.validation.constraints.NotNull;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @GetMapping
-    public ResponseEntity<Iterable<User>> getUsers() {
-        return ResponseEntity.ok(this.userService.getUsers());
-    }
+	@GetMapping
+	public ResponseEntity<Iterable<User>> getUsers() {
+		return ResponseEntity.ok(this.userService.getUsers());
+	}
 
-    @PostMapping
-    public ResponseEntity<User> save(@RequestBody @NotNull User user) {
-        return ResponseEntity.ok(this.userService.save(user));
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<User> getUser(@PathVariable("id") String userId) {
+		return ResponseEntity.ok(this.userService.getUserById(userId));
+	}
+
+	@PostMapping
+	public ResponseEntity<User> save(@RequestBody @NotNull User user) {
+		return ResponseEntity.ok(this.userService.save(user));
+	}
 
 }
