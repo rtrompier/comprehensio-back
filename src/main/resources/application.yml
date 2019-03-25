@@ -15,7 +15,7 @@ spring:
 
 logging:
   level:
-    ROOT: INFO
+    ROOT: DEBUG
     org.springframework.security: DEBUG 
     com.example.demo.config: DEBUG    
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
