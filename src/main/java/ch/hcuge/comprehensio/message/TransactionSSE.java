@@ -25,8 +25,8 @@ public class TransactionSSE implements TransactionMessageListener {
 
 	public Flux<ServerSentEvent<Transaction>> subscribe(String lastEventId) {
 		return replayProcessor
-				.log("subscribe")
-				.doOnError(e-> System.err.println("Erreur subscribe " + lastEventId + " :: " + e.getMessage()))
+				.log("Interpreter")
+				.doOnError(e-> System.err.println("Erreur Interpreter " + lastEventId + " :: " + e.getMessage()))
 				.filter(x -> x.data().getState() != State.INPROGRESS )
 				;
 	}
@@ -34,9 +34,9 @@ public class TransactionSSE implements TransactionMessageListener {
 	
 	public Flux<ServerSentEvent<Transaction>> subscribe2(String transactionId) {
 		return replayProcessor
-				.log("subscribe2")
-				.doOnError(e-> System.err.println("Erreur subscribe2 " + transactionId + " :: " + e.getMessage()))
-				.doOnEach(e -> System.out.println("subscribe2 " + transactionId))
+				.log("Soignants")
+				.doOnError(e-> System.err.println("Erreur Soignants " + transactionId + " :: " + e.getMessage()))
+				.doOnEach(e -> System.out.println("error soignant " + transactionId))
 				.filter(x -> transactionId != null && transactionId.equals(x.data().getId()))
 				;
 	}
