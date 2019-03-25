@@ -1,5 +1,7 @@
 package ch.hcuge.comprehensio.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +22,9 @@ import reactor.core.publisher.Flux;
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
+
+    Logger LOGGER = LoggerFactory.getLogger(TransactionController.class);
+
 
     @Autowired
     private TransactionService transactionService;
@@ -64,19 +69,15 @@ public class TransactionController {
     
     
     @GetMapping(path = "/sse-interpreter/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Transaction>> subscribeInterpreterTransactionMessage(
-    		@PathVariable("id") String id
-    		) {
-    	
+    public Flux<ServerSentEvent<Transaction>> subscribeInterpreterTransactionMessage(@PathVariable("id") String id) {
+        LOGGER.debug("Enter in sse-interpreter");
 //        return chatRoomEntry.subscribeSpring5(lastEventId);
     	return transactionService.subscribeTansactionSSEInterpreter(id);
     }
     
     @GetMapping(path = "/sse-caregiver/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Transaction>> subscribeCaregiverTransactionMessage(
-    		@PathVariable("id") String transactionId
-    		) {
-    	
+    public Flux<ServerSentEvent<Transaction>> subscribeCaregiverTransactionMessage(@PathVariable("id") String transactionId) {
+        LOGGER.debug("Enter in sse-caregiver");
     	return transactionService.subscribeTansactionSSECaregiver(transactionId);
     }
 }
