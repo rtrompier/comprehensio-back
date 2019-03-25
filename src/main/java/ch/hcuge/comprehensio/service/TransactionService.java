@@ -91,6 +91,9 @@ public class TransactionService {
 		if (tr.getState() == State.INPROGRESS) {
 			this.sseCaregiver.onPostMessage(tr);
 		}
+		if (tr.getState() == State.CANCELED || tr.getState() == State.CLOSE) {
+			this.sseInterpreter.onPostMessage(tr);
+		}
 
 		return this.transactionRepository.save(tr);
 	}

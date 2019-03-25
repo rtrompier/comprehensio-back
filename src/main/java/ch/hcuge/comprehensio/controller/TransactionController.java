@@ -69,7 +69,7 @@ public class TransactionController {
     		) {
     	
 //        return chatRoomEntry.subscribeSpring5(lastEventId);
-    	return transactionService.subscribeTansactionSSEInterpreter("1");
+    	return transactionService.subscribeTansactionSSEInterpreter(id);
     }
     
     @GetMapping(path = "/sse-caregiver/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
