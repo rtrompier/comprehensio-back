@@ -73,7 +73,9 @@ public class TransactionService {
 				tr.setToLang(tr2.getToLang());
 			}
 
-			tr.setStartDate(tr2.getStartDate());
+			if (tr.getStartDate() == null) {
+				tr.setStartDate(tr2.getStartDate());
+			}
 			if (tr.getState() == null) {
 				tr.setState(tr2.getState());
 			}
