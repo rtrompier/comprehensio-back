@@ -23,10 +23,10 @@ public class TransactionSSE implements TransactionMessageListener {
 		replayProcessor.onNext(event);
 	}
 
-	public Flux<ServerSentEvent<Transaction>> subscribe(String lastEventId) {
+	public Flux<ServerSentEvent<Transaction>> subscribe() {
 		return replayProcessor
-				.log("Interpreter" + lastEventId )
-				.doOnError(e-> System.err.println("Erreur Interpreter " + lastEventId + " :: " + e.getMessage()))
+				.log("Interpreter")
+				.doOnError(e-> System.err.println("Erreur Interpreter :: " + e.getMessage()))
 				.filter(x -> x.data().getState() != State.INPROGRESS )
 				;
 	}

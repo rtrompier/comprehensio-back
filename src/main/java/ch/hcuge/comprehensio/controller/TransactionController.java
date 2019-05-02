@@ -68,11 +68,11 @@ public class TransactionController {
     
     
     
-    @GetMapping(path = "/sse-interpreter/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Transaction>> subscribeInterpreterTransactionMessage(@PathVariable("id") String id) {
+    @GetMapping(path = "/sse-interpreter", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Transaction>> subscribeInterpreterTransactionMessage() {
         LOGGER.debug("Enter in sse-interpreter");
 //        return chatRoomEntry.subscribeSpring5(lastEventId);
-    	return transactionService.subscribeTansactionSSEInterpreter(id);
+    	return transactionService.subscribeTansactionSSEInterpreter();
     }
     
     @GetMapping(path = "/sse-caregiver/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

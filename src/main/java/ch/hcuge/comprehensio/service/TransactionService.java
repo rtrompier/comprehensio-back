@@ -140,8 +140,8 @@ public class TransactionService {
 	private TransactionSSE sseInterpreter = new TransactionSSE();
 	private TransactionSSE sseCaregiver = new TransactionSSE();
 
-	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSEInterpreter(String lastEventId) {
-		return sseInterpreter.subscribe(lastEventId);
+	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSEInterpreter() {
+		return sseInterpreter.subscribe();
 	}
 	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSECaregiver(String transactionId) {
 		return sseCaregiver.subscribe2(transactionId);
