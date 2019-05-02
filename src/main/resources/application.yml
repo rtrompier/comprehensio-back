@@ -13,7 +13,7 @@ spring:
         jwt:
           issuer-uri: ${rest.security.issuer-uri}
 
-log.level: DEBUG
+log.level: INFO
 
 logging:
   level:
@@ -34,4 +34,3 @@ logging:
 
 spring.http.log-request-details: true  
 
-debug: true
