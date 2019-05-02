@@ -7,6 +7,9 @@ import java.util.stream.Stream;
 
 import javax.validation.constraints.NotEmpty;
 
+import ch.hcuge.comprehensio.controller.TransactionController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.codec.ServerSentEvent;
@@ -25,11 +28,14 @@ import reactor.util.function.Tuple2;
 @Service
 public class TransactionService {
 
+	Logger LOGGER = LoggerFactory.getLogger(TransactionService.class);
+
 	@Autowired
 	private TransactionRepository transactionRepository;
 
 	@Autowired
 	private LangRepository langRepository;
+
 
 	@Transactional(readOnly = true)
 	public Iterable<Transaction> getTransactions() {
@@ -56,7 +62,7 @@ public class TransactionService {
 
 	@Transactional
 	public Transaction updateTransaction(Transaction tr) {
-
+		LOGGER.info("Start to update transaction");
 		Optional<Transaction> current = this.transactionRepository.findById(tr.getId());
 		if (current.isPresent()) {
 			Transaction tr2 = current.get();
@@ -88,12 +94,15 @@ public class TransactionService {
 		}
 
 		if (tr.getState() == State.PENDING) {
+			LOGGER.info("Transaction is pending, send notification to interpreters");
 			this.sseInterpreter.onPostMessage(tr);
 		}
 		if (tr.getState() == State.INPROGRESS) {
+			LOGGER.info("Transaction is inprogress, send notification to caregiver");
 			this.sseCaregiver.onPostMessage(tr);
 		}
         if (tr.getState() == State.CANCELED || tr.getState() == State.CLOSE) {
+			LOGGER.info("Transaction is canceled or close, send notification to interpreter");
             this.sseInterpreter.onPostMessage(tr);
         }
 		return this.transactionRepository.save(tr);
