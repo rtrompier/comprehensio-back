@@ -13,22 +13,24 @@ spring:
         jwt:
           issuer-uri: ${rest.security.issuer-uri}
 
+log.level: DEBUG
+
 logging:
   level:
-    ROOT: DEBUG
-    org.springframework.security: DEBUG 
-    com.example.demo.config: DEBUG    
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+    ROOT: ${log.level}
+    org.springframework.security: ${log.level}
+    com.example.demo.config: ${log.level}
+    org.springframework.web.filter.CommonsRequestLoggingFilter: ${log.level}
     org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
-    reactor.ipc.netty.channel.ChannelOperationsHandler: DEBUG
-    reactor.ipc.netty.http.server.HttpServer: DEBUG
-    reactor.ipc.netty.http.client: DEBUG
-    io.reactivex.netty.protocol.http.client: DEBUG
-    io.netty.handler: DEBUG
-    io.netty.handler.proxy.HttpProxyHandler: DEBUG
-    io.netty.handler.proxy.ProxyHandler: DEBUG
-    org.springframework.web.reactive.function.client: DEBUG
-    reactor.ipc.netty.channel: DEBUG
+    reactor.ipc.netty.channel.ChannelOperationsHandler: ${log.level}
+    reactor.ipc.netty.http.server.HttpServer: ${log.level}
+    reactor.ipc.netty.http.client: ${log.level}
+    io.reactivex.netty.protocol.http.client: ${log.level}
+    io.netty.handler: ${log.level}
+    io.netty.handler.proxy.HttpProxyHandler: ${log.level}
+    io.netty.handler.proxy.ProxyHandler: ${log.level}
+    org.springframework.web.reactive.function.client: ${log.level}
+    reactor.ipc.netty.channel: ${log.level}
 
 spring.http.log-request-details: true  
 
