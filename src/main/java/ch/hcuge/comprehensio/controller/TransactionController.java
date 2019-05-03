@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.hcuge.comprehensio.entity.Transaction;
 import ch.hcuge.comprehensio.service.TransactionService;
+import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 
 @RestController
@@ -79,5 +80,25 @@ public class TransactionController {
     public Flux<ServerSentEvent<Transaction>> subscribeCaregiverTransactionMessage(@PathVariable("id") String transactionId) {
         LOGGER.debug("Enter in sse-caregiver");
     	return transactionService.subscribeTansactionSSECaregiver(transactionId);
+    }
+
+
+    // --------- TEST ----------
+
+
+    private EmitterProcessor<ServerSentEvent<String>> replayProcessor = EmitterProcessor.<ServerSentEvent<String>>create(100);
+
+    @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<String>> subscribe() {
+        LOGGER.debug("Enter in subscribe");
+        return this.replayProcessor;
+    }
+
+    @PostMapping(path = "/test")
+    public ResponseEntity<Void> test() {
+        LOGGER.debug("Enter in test");
+        ServerSentEvent<String> event = ServerSentEvent.builder("Hello from SSE").event("message").id("1").data("Hello from SSE").build();
+        this.replayProcessor.onNext(event);
+        return ResponseEntity.noContent().build();
     }
 }
