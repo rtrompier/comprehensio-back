@@ -20,6 +20,8 @@ import ch.hcuge.comprehensio.service.TransactionService;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
@@ -97,7 +99,7 @@ public class TransactionController {
     @PostMapping(path = "/test")
     public ResponseEntity<Void> test() {
         LOGGER.debug("Enter in test");
-        ServerSentEvent<String> event = ServerSentEvent.builder("Hello from SSE").event("message").id("1").data("Hello from SSE").build();
+        ServerSentEvent<String> event = ServerSentEvent.builder("Hello from SSE").retry(Duration.ofSeconds(3)).event("message").id("1").data("Hello from SSE").build();
         this.replayProcessor.onNext(event);
         return ResponseEntity.noContent().build();
     }
