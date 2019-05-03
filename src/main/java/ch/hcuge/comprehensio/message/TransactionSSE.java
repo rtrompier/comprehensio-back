@@ -7,6 +7,8 @@ import ch.hcuge.comprehensio.entity.Transaction;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+
 public class TransactionSSE implements TransactionMessageListener {
 
 //	private ReplayProcessor<ServerSentEvent<Transaction>> replayProcessor;
@@ -19,7 +21,13 @@ public class TransactionSSE implements TransactionMessageListener {
 
 	@Override
 	public void onPostMessage(Transaction msg) {
-		ServerSentEvent<Transaction> event = ServerSentEvent.builder(msg).event("message").id(msg.getId()).data(msg).build();
+		ServerSentEvent<Transaction> event = ServerSentEvent
+				.builder(msg)
+				.event("message")
+				.id(msg.getId())
+				.data(msg)
+				.retry(Duration.ofSeconds(2))
+				.build();
 		replayProcessor.onNext(event);
 	}
 
