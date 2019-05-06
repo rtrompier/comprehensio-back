@@ -1,35 +1,17 @@
 package ch.hcuge.comprehensio.controller;
 
-import io.netty.channel.ChannelOutboundBuffer;
+import ch.hcuge.comprehensio.entity.State;
+import ch.hcuge.comprehensio.entity.Transaction;
+import ch.hcuge.comprehensio.message.InterpreterTransactionProcessor;
+import ch.hcuge.comprehensio.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import ch.hcuge.comprehensio.entity.Transaction;
-import ch.hcuge.comprehensio.service.TransactionService;
-import reactor.core.publisher.EmitterProcessor;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.ReplayProcessor;
-
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/transactions")
@@ -81,14 +63,14 @@ public class TransactionController {
     
     
     @GetMapping(path = "/sse-interpreter", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Transaction>> subscribeInterpreterTransactionMessage() {
+    public Flux<Transaction> subscribeInterpreterTransactionMessage() {
         LOGGER.debug("Enter in sse-interpreter");
 //        return chatRoomEntry.subscribeSpring5(lastEventId);
     	return transactionService.subscribeTansactionSSEInterpreter();
     }
     
     @GetMapping(path = "/sse-caregiver/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Transaction>> subscribeCaregiverTransactionMessage(@PathVariable("id") String transactionId) {
+    public Flux<Transaction> subscribeCaregiverTransactionMessage(@PathVariable("id") String transactionId) {
         LOGGER.debug("Enter in sse-caregiver");
     	return transactionService.subscribeTansactionSSECaregiver(transactionId);
     }
@@ -98,43 +80,23 @@ public class TransactionController {
 
 
     @Autowired
-    private MessageProcessor processor;
+    private InterpreterTransactionProcessor processor;
 
-    private ReplayProcessor<ServerSentEvent<String>> replayProcessor = ReplayProcessor.<ServerSentEvent<String>>create(100);
 
     @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> receive() {
-        // Some FluxSink documentation and code samples:
-        // - https://projectreactor.io/docs/core/release/reference/#producing.create
-        // - https://www.baeldung.com/reactor-core
-        // - https://www.e4developer.com/2018/04/14/webflux-and-servicing-client-requests-how-does-it-work/
-
+    public Flux<Transaction> receive() {
         return Flux.create(sink -> processor.register(sink::next));
     }
 
     @PostMapping(path = "/test")
-    public String send(@RequestBody String message) {
-        LOGGER.info("Received '{}'", message);
-        processor.process(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " " + message);
-        return "Done";
-    }
-}
-
-@Service
-class MessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageProcessor.class);
-
-    private List<Consumer<String>> listeners = new CopyOnWriteArrayList<>();
-
-    public void register(Consumer<String> listener) {
-        listeners.add(listener);
-        LOGGER.info("Added a listener, for a total of {} listener{}", listeners.size(), listeners.size() > 1 ? "s" : "");
-    }
-
-    // TODO FBE implement unregister
-
-    public void process(String message) {
-        listeners.forEach(c -> c.accept(message));
+    public ResponseEntity<Void> send() {
+        Transaction transaction = Transaction.builder()
+                .comment("Hello from backend")
+                .id("1")
+                .state(State.PENDING)
+                .build();
+        LOGGER.info("Send new transaction to all consumer '{}", transaction);
+        processor.process(transaction);
+        return ResponseEntity.noContent().build();
     }
 }

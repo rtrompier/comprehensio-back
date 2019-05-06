@@ -1,29 +1,26 @@
 package ch.hcuge.comprehensio.service;
 
-import java.time.Duration;
-import java.util.Date;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import javax.validation.constraints.NotEmpty;
-
-import ch.hcuge.comprehensio.controller.TransactionController;
+import ch.hcuge.comprehensio.entity.Lang;
+import ch.hcuge.comprehensio.entity.State;
+import ch.hcuge.comprehensio.entity.Transaction;
+import ch.hcuge.comprehensio.message.CareGiverTransactionProcessor;
+import ch.hcuge.comprehensio.message.InterpreterTransactionProcessor;
+import ch.hcuge.comprehensio.repository.LangRepository;
+import ch.hcuge.comprehensio.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ch.hcuge.comprehensio.entity.Lang;
-import ch.hcuge.comprehensio.entity.State;
-import ch.hcuge.comprehensio.entity.Transaction;
-import ch.hcuge.comprehensio.message.TransactionSSE;
-import ch.hcuge.comprehensio.repository.LangRepository;
-import ch.hcuge.comprehensio.repository.TransactionRepository;
 import reactor.core.publisher.Flux;
 import reactor.util.function.Tuple2;
+
+import javax.validation.constraints.NotEmpty;
+import java.time.Duration;
+import java.util.Date;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class TransactionService {
@@ -35,6 +32,12 @@ public class TransactionService {
 
 	@Autowired
 	private LangRepository langRepository;
+
+    @Autowired
+    private InterpreterTransactionProcessor interpreterTransactionProcessor;
+
+    @Autowired
+    private CareGiverTransactionProcessor careGiverTransactionProcessor;
 
 
 	@Transactional(readOnly = true)
@@ -95,15 +98,18 @@ public class TransactionService {
 
 		if (tr.getState() == State.PENDING) {
 			LOGGER.info("Transaction is pending, send notification to interpreters");
-			this.sseInterpreter.onPostMessage(tr);
+//			this.sseInterpreter.onPostMessage(tr);
+            this.interpreterTransactionProcessor.process(tr);
 		}
 		if (tr.getState() == State.INPROGRESS) {
 			LOGGER.info("Transaction is inprogress, send notification to caregiver");
-			this.sseCaregiver.onPostMessage(tr);
+//			this.sseCaregiver.onPostMessage(tr);
+            this.careGiverTransactionProcessor.process(tr);
 		}
         if (tr.getState() == State.CANCELED || tr.getState() == State.CLOSE) {
 			LOGGER.info("Transaction is canceled or close, send notification to interpreter");
-            this.sseInterpreter.onPostMessage(tr);
+//            this.sseInterpreter.onPostMessage(tr);
+            this.interpreterTransactionProcessor.process(tr);
         }
 		return this.transactionRepository.save(tr);
 	}
@@ -137,14 +143,11 @@ public class TransactionService {
 		this.eventPublisher = eventPublisher;
 	}
 
-	private TransactionSSE sseInterpreter = new TransactionSSE();
-	private TransactionSSE sseCaregiver = new TransactionSSE();
-
-	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSEInterpreter() {
-		return sseInterpreter.subscribe();
+	public Flux<Transaction> subscribeTansactionSSEInterpreter() {
+        return Flux.create(sink -> interpreterTransactionProcessor.register(sink::next));
 	}
-	public Flux<ServerSentEvent<Transaction>> subscribeTansactionSSECaregiver(String transactionId) {
-		return sseCaregiver.subscribe2(transactionId);
+	public Flux<Transaction> subscribeTansactionSSECaregiver(String transactionId) {
+        return Flux.create(sink -> careGiverTransactionProcessor.register(sink::next));
 	}
 
 }
