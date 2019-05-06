@@ -3,6 +3,7 @@ package ch.hcuge.comprehensio.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import ch.hcuge.comprehensio.entity.Transaction;
 import ch.hcuge.comprehensio.service.TransactionService;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.ReplayProcessor;
 
 import java.time.Duration;
 
@@ -88,12 +90,16 @@ public class TransactionController {
     // --------- TEST ----------
 
 
-    private EmitterProcessor<ServerSentEvent<String>> replayProcessor = EmitterProcessor.<ServerSentEvent<String>>create(100);
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+
+    private ReplayProcessor<ServerSentEvent<String>> replayProcessor = ReplayProcessor.<ServerSentEvent<String>>create(100);
 
     @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> subscribe() {
         LOGGER.debug("Enter in subscribe");
-        return this.replayProcessor.retry(3);
+        return this.replayProcessor.retry(3)
+                .doOnError(e -> LOGGER.error("ERROR : " + e.getMessage()));
     }
 
     @PostMapping(path = "/test")
