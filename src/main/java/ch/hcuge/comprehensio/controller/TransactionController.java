@@ -93,7 +93,7 @@ public class TransactionController {
     @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> subscribe() {
         LOGGER.debug("Enter in subscribe");
-        return this.replayProcessor;
+        return this.replayProcessor.retry(3);
     }
 
     @PostMapping(path = "/test")
